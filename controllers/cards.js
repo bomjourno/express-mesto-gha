@@ -31,3 +31,37 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
+
+module.exports.likeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }
+  )
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({
+          message: "Невозможно поставить лайк - такой карточки не существует",
+        });
+      }
+      return res.send(card);
+    })
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+module.exports.dislikeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
+    { new: true }
+  )
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({
+          message: "Невозможно убрать лайк - такой карточки не существует",
+        });
+      }
+      return res.send(card);
+    })
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
