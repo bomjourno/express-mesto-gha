@@ -1,10 +1,16 @@
 const Card = require("../models/card");
 
+const BAD_REQUEST = 400;
+const NOT_FOUND = 404;
+const ERROR_CODE = 500;
+
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      res
+        .status(ERROR_CODE)
+        .send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };
 
@@ -16,9 +22,13 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Введены некорректные данные" });
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Введены некорректные данные" });
       }
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(ERROR_CODE)
+        .send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };
 
@@ -26,13 +36,22 @@ module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({
+        return res.status(NOT_FOUND).send({
           message: "Такой карточки не существует",
         });
       }
       return res.send(card);
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.kind === "ObjectId") {
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Некорректный id карточки" });
+      }
+      return res
+        .status(ERROR_CODE)
+        .send({ message: `На сервере произошла ошибка: ${err.message}` });
+    });
 };
 
 module.exports.likeCard = (req, res) => {
@@ -43,17 +62,21 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({
+        return res.status(NOT_FOUND).send({
           message: "Невозможно поставить лайк - такой карточки не существует",
         });
       }
       return res.send(card);
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Введены некорректные данные" });
+      if (err.kind === "ObjectId") {
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Некорректный id карточки" });
       }
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(ERROR_CODE)
+        .send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };
 
@@ -65,16 +88,20 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({
+        return res.status(NOT_FOUND).send({
           message: "Невозможно убрать лайк - такой карточки не существует",
         });
       }
       return res.send(card);
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Введены некорректные данные" });
+      if (err.kind === "ObjectId") {
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Некорректный id карточки" });
       }
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(ERROR_CODE)
+        .send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };
