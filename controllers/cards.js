@@ -15,7 +15,10 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner })
     .then((card) => res.send(card))
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      if (err.name === "ValidationError") {
+        return res.status(400).send({ message: "Введены некорректные данные" });
+      }
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -46,7 +49,12 @@ module.exports.likeCard = (req, res) => {
       }
       return res.send(card);
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return res.status(400).send({ message: "Введены некорректные данные" });
+      }
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -63,5 +71,10 @@ module.exports.dislikeCard = (req, res) => {
       }
       return res.send(card);
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return res.status(400).send({ message: "Введены некорректные данные" });
+      }
+      return res.status(500).send({ message: err.message });
+    });
 };
