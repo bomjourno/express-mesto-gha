@@ -7,10 +7,8 @@ const ERROR_CODE = 500;
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) =>
-      res
-        .status(ERROR_CODE)
-        .send({ message: `На сервере произошла ошибка: ${err.message}` })
+    .catch(() =>
+      res.status(ERROR_CODE).send({ message: "На сервере произошла ошибка" })
     );
 };
 
@@ -32,7 +30,7 @@ module.exports.getUserById = (req, res) => {
       }
       return res
         .status(ERROR_CODE)
-        .send({ message: `На сервере произошла ошибка: ${err.message}` });
+        .send({ message: "На сервере произошла ошибка" });
     });
 };
 
@@ -49,7 +47,7 @@ module.exports.createUser = (req, res) => {
       }
       return res
         .status(ERROR_CODE)
-        .send({ message: `На сервере произошла ошибка: ${err.message}` });
+        .send({ message: "На сервере произошла ошибка" });
     });
 };
 
@@ -77,14 +75,18 @@ module.exports.updateUserProfile = (req, res) => {
       }
       return res
         .status(ERROR_CODE)
-        .send({ message: `На сервере произошла ошибка: ${err.message}` });
+        .send({ message: "На сервере произошла ошибка" });
     });
 };
 
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
 
-  User.findOneAndUpdate(req.user._id, { avatar }, { runValidators: true })
+  User.findOneAndUpdate(
+    req.user._id,
+    { avatar },
+    { runValidators: true, new: true }
+  )
     .then((user) => {
       if (!user) {
         return res
@@ -106,6 +108,6 @@ module.exports.updateUserAvatar = (req, res) => {
       }
       return res
         .status(ERROR_CODE)
-        .send({ message: `На сервере произошла ошибка: ${err.message}` });
+        .send({ message: "На сервере произошла ошибка" });
     });
 };
