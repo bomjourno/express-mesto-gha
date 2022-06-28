@@ -6,6 +6,7 @@
     "comma-dangle": ["error", "only-multiline"],
     "function-paren-newline": "off",
     "no-unused-vars": "warn",
-    "implicit-arrow-linebreak": "off"
+    "implicit-arrow-linebreak": "off",
+    "object-curly-newline": "off"
   }
 }

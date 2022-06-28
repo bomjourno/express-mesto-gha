@@ -1,4 +1,6 @@
 const Card = require("../models/card");
+const NotFound = require("../errors/NotFound");
+const Forbidden = require("../errors/Forbidden");
 
 const BAD_REQUEST = 400;
 const NOT_FOUND = 404;
@@ -31,14 +33,17 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({
-          message: "Такой карточки не существует",
-        });
+        throw new NotFound("Такой карточки не существует");
       }
-      return res.send(card);
+      if (!card.owner.equals(req.user._id)) {
+        throw new Forbidden("Нет прав для удаления карточки");
+      }
+      return card
+        .remove()
+        .then(() => res.send({ message: "Карточка удалена" }));
     })
     .catch((err) => {
       if (err.kind === "ObjectId") {
