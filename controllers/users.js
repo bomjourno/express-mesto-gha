@@ -114,7 +114,6 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.getMe = (req, res, next) => {
-  console.log(req);
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
