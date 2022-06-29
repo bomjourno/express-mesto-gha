@@ -1,7 +1,7 @@
-const Card = require("../models/card");
-const NotFound = require("../errors/NotFound");
-const Forbidden = require("../errors/Forbidden");
-const ValidationError = require("../errors/ValidationError");
+const Card = require('../models/card');
+const NotFound = require('../errors/NotFound');
+const Forbidden = require('../errors/Forbidden');
+const ValidationError = require('../errors/ValidationError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -16,8 +16,8 @@ module.exports.createCard = (req, res, next) => {
   Card.create({ name, link, owner })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        next(new ValidationError("Введены некорректные данные"));
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('Введены некорректные данные'));
       } else {
         next(err);
       }
@@ -28,14 +28,14 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFound("Такой карточки не существует");
+        throw new NotFound('Такой карточки не существует');
       }
       if (!card.owner.equals(req.user._id)) {
-        throw new Forbidden("Нет прав для удаления карточки");
+        throw new Forbidden('Нет прав для удаления карточки');
       }
       return card
         .remove()
-        .then(() => res.send({ message: "Карточка удалена" }));
+        .then(() => res.send({ message: 'Карточка удалена' }));
     })
     .catch(next);
 };
@@ -44,14 +44,14 @@ module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
         return next(
           new NotFound(
-            "Невозможно поставить лайк - такой карточки не существует"
-          )
+            'Невозможно поставить лайк - такой карточки не существует',
+          ),
         );
       }
       return res.send(card);
@@ -63,12 +63,12 @@ module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
         return next(
-          new NotFound("Невозможно убрать лайк - такой карточки не существует")
+          new NotFound('Невозможно убрать лайк - такой карточки не существует'),
         );
       }
       return res.send(card);
