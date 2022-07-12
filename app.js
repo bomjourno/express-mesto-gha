@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, errors, Joi } = require('celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -20,6 +21,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
 
+app.use(requestLogger);
+
 app.post(
   '/signin',
   celebrate({
@@ -30,8 +33,7 @@ app.post(
   }),
   login,
 );
-// регулярка у меня работает, поверил все шаблоны в  https://regexr.com/ //
-// прошу перепроверить, возможно в тесте у вас был лишний пробел или интер в конце //
+
 app.post(
   '/signup',
   celebrate({
@@ -54,6 +56,8 @@ app.use('/cards', require('./routes/cards'));
 app.all('*', (req, res, next) => {
   next(new NotFound('Неправильный путь'));
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 app.use(errorHandler);
