@@ -29,6 +29,8 @@ const allowedCors = [
   'https://localhost:3000',
   'http://hppynewfear.nomoredomains.xyz/',
   'https://hppynewfear.nomoredomains.xyz/',
+  'http://api.hppynewfear.nomoredomains.xyz',
+  'https://api.hppynewfear.nomoredomains.xyz',
 ];
 
 const options = {
