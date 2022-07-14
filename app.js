@@ -13,7 +13,7 @@ const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
 const NotFound = require('./errors/NotFound');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 const app = express();
 
 app.use(bodyParser.json());
@@ -21,13 +21,20 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // cors
-const options = [
+const allowedCors = [
   'https://praktikum.tk',
   'http://praktikum.tk',
   'localhost:3000',
+  'http://localhost:3000',
+  'https://localhost:3000',
   'http://hppynewfear.nomoredomains.xyz/',
   'https://hppynewfear.nomoredomains.xyz/',
 ];
+
+const options = {
+  origin: allowedCors,
+  credentials: true,
+};
 
 app.use('*', cors(options));
 
